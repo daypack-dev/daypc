@@ -1,16 +1,12 @@
-SRCFILES = debug/*.ml* tests/*.ml* cli/*.ml lib/*.ml lib/*.mli
-
-CINAPSFILES = lib/*.cinaps tests/*.cinaps
+SRCFILES = src/*.ml
 
 OCAMLFORMAT = ocamlformat \
 	--inplace \
-	$(SRCFILES) \
-	$(CINAPSFILES)
+	$(SRCFILES)
 
 OCPINDENT = ocp-indent \
 	--inplace \
-	$(SRCFILES) \
-	$(CINAPSFILES)
+	$(SRCFILES)
 
 .PHONY: all
 all :
@@ -18,7 +14,7 @@ all :
 
 .PHONY: cli
 cli :
-	dune exec ./cli/daypc.exe
+	dune exec ./src/daypc.exe
 
 .PHONY: doc
 doc :
