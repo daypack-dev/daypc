@@ -3,7 +3,7 @@
  (public_name daypc)
  (name daypc)
  (package daypc)
- (libraries daypack_lib
+ (libraries daypack-lib
             cmdliner
             fileutils
             )
