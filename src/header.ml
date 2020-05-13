@@ -12,19 +12,10 @@ let display_pending_sched_reqs (context : Context.t) : unit =
   let hd =
     Daypack_lib.Sched_ver_history.Read.get_head context.sched_ver_history
   in
-  let cur_date_time =
-    Daypack_lib.Time.Current.cur_date_time
-      ~tz_offset_s_of_date_time:(Some (Misc_utils.curret_tz_offset_s ()))
-    |> Result.get_ok
-  in
-  let end_exc_tm =
-    { cur_date_time with day = cur_date_time.day + Config.sched_day_count }
-  in
-  let start =
-    Daypack_lib.Time.unix_time_of_date_time cur_date_time |> Result.get_ok
-  in
+  let start = Daypack_lib.Time.Current.cur_unix_time () in
   let end_exc =
-    Daypack_lib.Time.unix_time_of_date_time end_exc_tm |> Result.get_ok
+    Daypack_lib.Time.Add.add_days_unix_time ~days:Config.sched_day_count
+      start
   in
   let expired_sched_reqs =
     Daypack_lib.Sched.Sched_req.To_seq.Pending.pending_sched_req_seq
