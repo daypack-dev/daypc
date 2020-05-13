@@ -23,7 +23,7 @@ let run (add_task : bool) : unit =
             let open Daypack_lib.Task in
             {
               splittable = false;
-              parallelizable = false;
+              parallelizability = 1;
               task_type = Daypack_lib.Task.One_off;
               name;
             }

@@ -230,7 +230,7 @@ let process_time_string (s : string) : (int64, string) result =
         Daypack_lib.Time_expr.Time_points_expr.next_match_unix_time
           (Years_ahead_start_unix_time
              {
-               search_in_time_zone = `Local;
+               search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
                start = Daypack_lib.Time.Current.cur_unix_time ();
                search_years_ahead = Config.time_pattern_search_years_ahead;
              })
@@ -250,7 +250,7 @@ let process_time_slots_string (s : string) :
         Daypack_lib.Time_expr.Time_slots_expr.matching_time_slots
           (Years_ahead_start_unix_time
              {
-               search_in_time_zone = `Local;
+               search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
                start = cur_time;
                search_years_ahead = Config.time_pattern_search_years_ahead;
              })

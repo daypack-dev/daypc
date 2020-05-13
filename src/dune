@@ -6,5 +6,6 @@
  (libraries daypack-lib
             cmdliner
             fileutils
+            ptime.clock.os
             )
  )

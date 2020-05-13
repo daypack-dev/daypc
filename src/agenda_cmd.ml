@@ -9,11 +9,15 @@ let display_place ~start sched
        Daypack_lib.Task.task_seg_place) : unit =
   let start_str =
     Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_time
-      ~display_in_time_zone:`Local place_start
+      ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
+      place_start
+    |> Result.get_ok
   in
   let end_exc_str =
     Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_time
-      ~display_in_time_zone:`Local place_end_exc
+      ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
+      place_end_exc
+    |> Result.get_ok
   in
   let time_from_start_str =
     Int64.sub place_start start
@@ -136,11 +140,15 @@ let run (list_free_time_slots : bool) (show_all : bool) : unit =
         (fun (start, end_exc) ->
            let start_str =
              Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_time
-               ~display_in_time_zone:`Local start
+               ~display_using_tz_offset_s:
+                 (Some Dynamic_param.current_tz_offset_s) start
+             |> Result.get_ok
            in
            let end_exc_str =
              Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_time
-               ~display_in_time_zone:`Local end_exc
+               ~display_using_tz_offset_s:
+                 (Some Dynamic_param.current_tz_offset_s) end_exc
+             |> Result.get_ok
            in
            let duration_str =
              Int64.sub end_exc start

@@ -2,7 +2,8 @@ let display_current_time () : unit =
   let cur_time_str =
     Daypack_lib.Time.Current.cur_unix_time ()
     |> Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_time
-      ~display_in_time_zone:`Local
+      ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
+    |> Result.get_ok
   in
   print_endline "Time right now:";
   Printf.printf "  - %s\n" cur_time_str
@@ -11,13 +12,19 @@ let display_pending_sched_reqs (context : Context.t) : unit =
   let hd =
     Daypack_lib.Sched_ver_history.Read.get_head context.sched_ver_history
   in
-  let cur_tm = Daypack_lib.Time.Current.cur_tm_local () in
-  let end_exc_tm =
-    { cur_tm with tm_mon = cur_tm.tm_mday + Config.sched_day_count }
+  let cur_date_time =
+    Daypack_lib.Time.Current.cur_date_time
+      ~tz_offset_s_of_date_time:(Some (Misc_utils.curret_tz_offset_s ()))
+    |> Result.get_ok
   in
-  let start = Daypack_lib.Time.unix_time_of_tm ~time_zone_of_tm:`Local cur_tm in
+  let end_exc_tm =
+    { cur_date_time with day = cur_date_time.day + Config.sched_day_count }
+  in
+  let start =
+    Daypack_lib.Time.unix_time_of_date_time cur_date_time |> Result.get_ok
+  in
   let end_exc =
-    Daypack_lib.Time.unix_time_of_tm ~time_zone_of_tm:`Local end_exc_tm
+    Daypack_lib.Time.unix_time_of_date_time end_exc_tm |> Result.get_ok
   in
   let expired_sched_reqs =
     Daypack_lib.Sched.Sched_req.To_seq.Pending.pending_sched_req_seq
@@ -78,11 +85,15 @@ let display_overdue_task_segs (context : Context.t) : unit =
          in
          let start_str =
            Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_time
-             ~display_in_time_zone:`Local place_start
+             ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
+             place_start
+           |> Result.get_ok
          in
          let end_exc_str =
            Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_time
-             ~display_in_time_zone:`Local place_end_exc
+             ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
+             place_end_exc
+           |> Result.get_ok
          in
          Printf.printf "    - | %s - %s | %s | %s\n" start_str end_exc_str
            (Id.string_of_task_seg_id task_seg_id)
