@@ -140,13 +140,13 @@ let run (list_free_time_slots : bool) (show_all : bool) : unit =
       List.iter
         (fun (start, end_exc) ->
            let start_str =
-             Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_second
+             Daypack_lib.Time.To_string.yyyymondd_hhmmss_string_of_unix_second
                ~display_using_tz_offset_s:
                  (Some Dynamic_param.current_tz_offset_s) start
              |> Result.get_ok
            in
            let end_exc_str =
-             Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_second
+             Daypack_lib.Time.To_string.yyyymondd_hhmmss_string_of_unix_second
                ~display_using_tz_offset_s:
                  (Some Dynamic_param.current_tz_offset_s) end_exc
              |> Result.get_ok
