@@ -8,13 +8,13 @@ let display_place ~start sched
     ((task_seg_id, place_start, place_end_exc) :
        Daypack_lib.Task.task_seg_place) : unit =
   let start_str =
-    Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_second
+    Daypack_lib.Time.To_string.yyyymondd_hhmm_string_of_unix_second
       ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
       place_start
     |> Result.get_ok
   in
   let end_exc_str =
-    Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_second
+    Daypack_lib.Time.To_string.yyyymondd_hhmm_string_of_unix_second
       ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
       place_end_exc
     |> Result.get_ok
