@@ -1,7 +1,7 @@
 let display_current_time () : unit =
   let cur_time_str =
     Daypack_lib.Time.Current.cur_unix_second ()
-    |> Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_second
+    |> Daypack_lib.Time.To_string.yyyymondd_hhmmss_string_of_unix_second
       ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
     |> Result.get_ok
   in
@@ -74,13 +74,13 @@ let display_overdue_task_segs (context : Context.t) : unit =
            Daypack_lib.Sched.Task.Find.find_task_any_opt task_id hd |> Option.get
          in
          let start_str =
-           Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_second
+           Daypack_lib.Time.To_string.yyyymondd_hhmm_string_of_unix_second
              ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
              place_start
            |> Result.get_ok
          in
          let end_exc_str =
-           Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_second
+           Daypack_lib.Time.To_string.yyyymondd_hhmm_string_of_unix_second
              ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
              place_end_exc
            |> Result.get_ok
