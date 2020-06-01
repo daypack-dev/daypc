@@ -1,7 +1,7 @@
 let display_current_time () : unit =
   let cur_time_str =
-    Daypack_lib.Time.Current.cur_unix_time ()
-    |> Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_time
+    Daypack_lib.Time.Current.cur_unix_second ()
+    |> Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_second
       ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
     |> Result.get_ok
   in
@@ -12,10 +12,9 @@ let display_pending_sched_reqs (context : Context.t) : unit =
   let hd =
     Daypack_lib.Sched_ver_history.Read.get_head context.sched_ver_history
   in
-  let start = Daypack_lib.Time.Current.cur_unix_time () in
+  let start = Daypack_lib.Time.Current.cur_unix_second () in
   let end_exc =
-    Daypack_lib.Time.Add.add_days_unix_time ~days:Config.sched_day_count
-      start
+    Daypack_lib.Time.Add.add_days_unix_second ~days:Config.sched_day_count start
   in
   let expired_sched_reqs =
     Daypack_lib.Sched.Sched_req.To_seq.Pending.pending_sched_req_seq
@@ -59,7 +58,7 @@ let display_overdue_task_segs (context : Context.t) : unit =
   in
   let overdue_task_seg_places =
     Daypack_lib.Sched.Overdue.get_overdue_task_seg_places
-      ~deadline:(Daypack_lib.Time.Current.cur_unix_time ())
+      ~deadline:(Daypack_lib.Time.Current.cur_unix_second ())
       hd
     |> List.of_seq
   in
@@ -75,13 +74,13 @@ let display_overdue_task_segs (context : Context.t) : unit =
            Daypack_lib.Sched.Task.Find.find_task_any_opt task_id hd |> Option.get
          in
          let start_str =
-           Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_time
+           Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_second
              ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
              place_start
            |> Result.get_ok
          in
          let end_exc_str =
-           Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_time
+           Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_second
              ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
              place_end_exc
            |> Result.get_ok

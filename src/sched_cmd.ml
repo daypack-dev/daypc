@@ -4,11 +4,11 @@ let run () : unit =
   match Context.load () with
   | Error msg -> print_endline msg
   | Ok context -> (
-      let cur_time = Daypack_lib.Time.Current.cur_unix_time () in
+      let cur_time = Daypack_lib.Time.Current.cur_unix_second () in
       match
         Daypack_lib.Sched_ver_history.Maybe_append_to_head.sched ~start:cur_time
           ~end_exc:
-            (Daypack_lib.Time.Add.add_days_unix_time
+            (Daypack_lib.Time.Add.add_days_unix_second
                ~days:Config.sched_day_count cur_time)
           ~include_sched_reqs_starting_within_time_slot:true
           ~include_sched_reqs_ending_within_time_slot:true

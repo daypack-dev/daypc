@@ -8,13 +8,13 @@ let display_place ~start sched
     ((task_seg_id, place_start, place_end_exc) :
        Daypack_lib.Task.task_seg_place) : unit =
   let start_str =
-    Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_time
+    Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_second
       ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
       place_start
     |> Result.get_ok
   in
   let end_exc_str =
-    Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_time
+    Daypack_lib.Time.To_string.yyyymmdd_hhmm_string_of_unix_second
       ~display_using_tz_offset_s:(Some Dynamic_param.current_tz_offset_s)
       place_end_exc
     |> Result.get_ok
@@ -22,6 +22,7 @@ let display_place ~start sched
   let time_from_start_str =
     Int64.sub place_start start
     |> Daypack_lib.Duration.of_seconds
+    |> Result.get_ok
     |> Daypack_lib.Duration.To_string.human_readable_string_of_duration
   in
   let task_id = Daypack_lib.Task.Id.task_id_of_task_seg_id task_seg_id in
@@ -123,10 +124,10 @@ let run (list_free_time_slots : bool) (show_all : bool) : unit =
     let hd =
       Daypack_lib.Sched_ver_history.Read.get_head context.sched_ver_history
     in
-    let cur_time = Daypack_lib.Time.Current.cur_unix_time () in
+    let cur_time = Daypack_lib.Time.Current.cur_unix_second () in
     if list_free_time_slots then (
       let end_exc =
-        Daypack_lib.Time.Add.add_days_unix_time
+        Daypack_lib.Time.Add.add_days_unix_second
           ~days:Config.agenda_search_day_count_far cur_time
       in
       let l =
@@ -139,13 +140,13 @@ let run (list_free_time_slots : bool) (show_all : bool) : unit =
       List.iter
         (fun (start, end_exc) ->
            let start_str =
-             Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_time
+             Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_second
                ~display_using_tz_offset_s:
                  (Some Dynamic_param.current_tz_offset_s) start
              |> Result.get_ok
            in
            let end_exc_str =
-             Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_time
+             Daypack_lib.Time.To_string.yyyymmdd_hhmmss_string_of_unix_second
                ~display_using_tz_offset_s:
                  (Some Dynamic_param.current_tz_offset_s) end_exc
              |> Result.get_ok
@@ -153,6 +154,7 @@ let run (list_free_time_slots : bool) (show_all : bool) : unit =
            let duration_str =
              Int64.sub end_exc start
              |> Daypack_lib.Duration.of_seconds
+             |> Result.get_ok
              |> Daypack_lib.Duration.To_string
                 .human_readable_string_of_duration
            in

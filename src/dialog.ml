@@ -223,15 +223,15 @@ let ask_uint64_multi ~indent_level ~(prompt : string) : int64 list =
       with Failure msg -> Error msg)
 
 let process_time_string (s : string) : (int64, string) result =
-  match Daypack_lib.Time_expr.Interpret_string.time_points_expr_of_string s with
+  match Daypack_lib.Time_expr.Of_string.time_points_expr_of_string s with
   | Error msg -> Error msg
   | Ok expr -> (
       match
-        Daypack_lib.Time_expr.Time_points_expr.next_match_unix_time
-          (Years_ahead_start_unix_time
+        Daypack_lib.Time_expr.Time_points_expr.next_match_unix_second
+          (Years_ahead_start_unix_second
              {
                search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
-               start = Daypack_lib.Time.Current.cur_unix_time ();
+               start = Daypack_lib.Time.Current.cur_unix_second ();
                search_years_ahead = Config.time_pattern_search_years_ahead;
              })
           expr
@@ -242,13 +242,13 @@ let process_time_string (s : string) : (int64, string) result =
 
 let process_time_slots_string (s : string) :
   ((int64 * int64) list, string) result =
-  let cur_time = Daypack_lib.Time.Current.cur_unix_time () in
-  match Daypack_lib.Time_expr.Interpret_string.time_slots_expr_of_string s with
+  let cur_time = Daypack_lib.Time.Current.cur_unix_second () in
+  match Daypack_lib.Time_expr.Of_string.time_slots_expr_of_string s with
   | Error msg -> Error msg
   | Ok e -> (
       match
         Daypack_lib.Time_expr.Time_slots_expr.matching_time_slots
-          (Years_ahead_start_unix_time
+          (Years_ahead_start_unix_second
              {
                search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
                start = cur_time;
@@ -354,7 +354,7 @@ let ask_sched_req_data_unit ~indent_level
     let start = ask_time ~indent_level ~prompt:"Enter start time" in
     let duration =
       ask ~indent_level ~prompt:"Enter duration" ~f_until:None
-        Daypack_lib.Duration.Interpret_string.of_string
+        Daypack_lib.Duration.Of_string.of_string
       |> Daypack_lib.Duration.to_seconds
     in
     Ok

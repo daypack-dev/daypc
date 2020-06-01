@@ -3,7 +3,7 @@ let weekdays = [ `Mon; `Tue; `Wed; `Thu; `Fri ]
 let weekend = [ `Sat; `Sun ]
 
 let make_time_pattern_weekday ~hour ?(min = 0) weekday :
-  Daypack_lib.Time_pattern.t =
+  Daypack_lib.Time_pattern.time_pattern =
   {
     years = [];
     months = [];
@@ -12,7 +12,7 @@ let make_time_pattern_weekday ~hour ?(min = 0) weekday :
     hours = [ hour ];
     minutes = [ min ];
     seconds = [];
-    unix_times = [];
+    unix_seconds = [];
   }
 
 let make_time_profile_single_weekday ~start_hour ?(start_min = 0) ~end_exc_hour
