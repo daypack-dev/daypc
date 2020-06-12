@@ -4,7 +4,7 @@ let free_time_slots_arg = Arg.(value & flag & info [ "free" ])
 
 let show_all_arg = Arg.(value & flag & info [ "all" ])
 
-let display_place ~start sched
+let display_place ~cur_time sched
     ((task_seg_id, place_start, place_end_exc) :
        Daypack_lib.Task.task_seg_place) : unit =
   let start_str =
@@ -20,7 +20,7 @@ let display_place ~start sched
     |> Result.get_ok
   in
   let time_from_start_str =
-    Int64.sub place_start start
+    Int64.sub place_start cur_time
     |> Daypack_lib.Duration.of_seconds
     |> Result.get_ok
     |> Daypack_lib.Duration.To_string.human_readable_string_of_duration
@@ -34,9 +34,9 @@ let display_place ~start sched
   let time_str_space = String.make (String.length time_str) ' ' in
   Printf.printf "%s| %s \n" time_str task.name;
   Printf.printf "%s| ID: %s\n" time_str_space task_seg_id_str;
-  Printf.printf "%s| From start: %s\n" time_str_space time_from_start_str
+  Printf.printf "%s| From now: %s\n" time_str_space time_from_start_str
 
-let display_places ~title ~show_all ~start ~end_exc ~max_count
+let display_places ~title ~show_all ~cur_time ~start ~end_exc ~max_count
     (sched : Daypack_lib.Sched.sched) : unit =
   let places_all =
     Daypack_lib.Sched.Agenda.To_seq.task_seg_place_uncompleted ~start ~end_exc
@@ -60,7 +60,7 @@ let display_places ~title ~show_all ~start ~end_exc ~max_count
   print_newline ();
   places_all
   |> (fun s -> if show_all then s else OSeq.take max_count s)
-  |> Seq.iter (display_place ~start sched)
+  |> Seq.iter (display_place ~cur_time sched)
 
 let display_places_active_or_soon ~show_all ~cur_time sched : unit =
   let end_exc =
@@ -73,7 +73,7 @@ let display_places_active_or_soon ~show_all ~cur_time sched : unit =
     Printf.sprintf "Active or starting within next %d minutes"
       Config.agenda_search_minute_count_soon
   in
-  display_places ~title ~show_all ~start:cur_time ~end_exc
+  display_places ~title ~show_all ~cur_time ~start:cur_time ~end_exc
     ~max_count:Config.agenda_display_task_seg_place_soon_max_count sched
 
 let display_places_close ~show_all ~cur_time sched : unit =
@@ -93,7 +93,7 @@ let display_places_close ~show_all ~cur_time sched : unit =
     Printf.sprintf "Next batch starting within next %d days"
       Config.agenda_search_day_count_close
   in
-  display_places ~title ~show_all ~start ~end_exc
+  display_places ~title ~show_all ~cur_time ~start ~end_exc
     ~max_count:Config.agenda_display_task_seg_place_close_max_count sched
 
 let display_places_far ~show_all ~cur_time sched : unit =
@@ -113,7 +113,7 @@ let display_places_far ~show_all ~cur_time sched : unit =
     Printf.sprintf "Next batch starting within next %d days"
       Config.agenda_search_day_count_far
   in
-  display_places ~title ~show_all ~start ~end_exc
+  display_places ~title ~show_all ~cur_time ~start ~end_exc
     ~max_count:Config.agenda_display_task_seg_place_far_max_count sched
 
 let run (list_free_time_slots : bool) (show_all : bool) : unit =
