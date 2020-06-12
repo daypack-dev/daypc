@@ -17,13 +17,17 @@ let run (add_task : bool) : unit =
           Dialog.ask_pick_choice ~indent_level:0 ~prompt:"Pick task type"
             [ ("one-off", `One_off); ("recurring", `Recurring) ]
         in
+        let parallelizable =
+          Dialog.ask_yn ~indent_level:0 ~prompt:"Is the task parallelizable?"
+          = `Yes
+        in
         match task_type_choice with
         | `One_off ->
           let task_data =
             let open Daypack_lib.Task in
             {
               splittable = false;
-              parallelizability = 1;
+              parallelizable;
               task_type = Daypack_lib.Task.One_off;
               name;
             }
