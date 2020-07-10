@@ -223,37 +223,42 @@ let ask_uint64_multi ~indent_level ~(prompt : string) : int64 list =
       with Failure msg -> Error msg)
 
 let process_time_string (s : string) : (int64, string) result =
-  match Daypack_lib.Time_expr.Of_string.time_points_expr_of_string s with
+  match Daypack_lib.Time_expr.of_string s with
   | Error msg -> Error msg
   | Ok expr -> (
-      match
-        Daypack_lib.Time_expr.Time_points_expr.next_match_unix_second
+      let search_param =
+        Daypack_lib.Search_param.
           (Years_ahead_start_unix_second
              {
                search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
                start = Daypack_lib.Time.Current.cur_unix_second ();
                search_years_ahead = Config.time_pattern_search_years_ahead;
              })
+      in
+      match
+        Daypack_lib.Time_expr.next_match_time_slot search_param
           expr
       with
       | Error msg -> Error msg
       | Ok None -> Error "Failed to find a matching time"
-      | Ok (Some x) -> Ok x )
+      | Ok (Some (x, _)) -> Ok x )
 
 let process_time_slots_string (s : string) :
   ((int64 * int64) list, string) result =
   let cur_time = Daypack_lib.Time.Current.cur_unix_second () in
-  match Daypack_lib.Time_expr.Of_string.time_slots_expr_of_string s with
+  match Daypack_lib.Time_expr.of_string s with
   | Error msg -> Error msg
   | Ok e -> (
-      match
-        Daypack_lib.Time_expr.Time_slots_expr.matching_time_slots
-          (Years_ahead_start_unix_second
-             {
-               search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
-               start = cur_time;
-               search_years_ahead = Config.time_pattern_search_years_ahead;
-             })
+      let search_param =
+      Daypack_lib.Search_param.(Years_ahead_start_unix_second
+         {
+           search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
+           start = cur_time;
+           search_years_ahead = Config.time_pattern_search_years_ahead;
+         })
+      in
+        match
+        Daypack_lib.Time_expr.matching_time_slots search_param
           e
       with
       | Error msg -> Error msg
