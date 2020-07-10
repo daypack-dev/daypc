@@ -227,18 +227,15 @@ let process_time_slot_string (s : string) : (int64 * int64, string) result =
   | Error msg -> Error msg
   | Ok expr -> (
       let search_param =
-        Daypack_lib.Search_param.
-          (Years_ahead_start_unix_second
-             {
-               search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
-               start = Daypack_lib.Time.Current.cur_unix_second ();
-               search_years_ahead = Config.time_pattern_search_years_ahead;
-             })
+        let open Daypack_lib.Search_param in
+        Years_ahead_start_unix_second
+          {
+            search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
+            start = Daypack_lib.Time.Current.cur_unix_second ();
+            search_years_ahead = Config.time_pattern_search_years_ahead;
+          }
       in
-      match
-        Daypack_lib.Time_expr.next_match_time_slot search_param
-          expr
-      with
+      match Daypack_lib.Time_expr.next_match_time_slot search_param expr with
       | Error msg -> Error msg
       | Ok None -> Error "Failed to find a matching time slot"
       | Ok (Some x) -> Ok x )
@@ -248,22 +245,18 @@ let process_time_string (s : string) : (int64, string) result =
   | Error msg -> Error msg
   | Ok expr -> (
       let search_param =
-        Daypack_lib.Search_param.
-          (Years_ahead_start_unix_second
-             {
-               search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
-               start = Daypack_lib.Time.Current.cur_unix_second ();
-               search_years_ahead = Config.time_pattern_search_years_ahead;
-             })
+        let open Daypack_lib.Search_param in
+        Years_ahead_start_unix_second
+          {
+            search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
+            start = Daypack_lib.Time.Current.cur_unix_second ();
+            search_years_ahead = Config.time_pattern_search_years_ahead;
+          }
       in
-      match
-        Daypack_lib.Time_expr.next_match_time_slot search_param
-          expr
-      with
+      match Daypack_lib.Time_expr.next_match_time_slot search_param expr with
       | Error msg -> Error msg
       | Ok None -> Error "Failed to find a matching time"
-      | Ok (Some (x, _)) -> Ok x
-    )
+      | Ok (Some (x, _)) -> Ok x )
 
 let process_time_slots_string (s : string) :
   ((int64 * int64) list, string) result =
@@ -272,17 +265,15 @@ let process_time_slots_string (s : string) :
   | Error msg -> Error msg
   | Ok e -> (
       let search_param =
-      Daypack_lib.Search_param.(Years_ahead_start_unix_second
-         {
-           search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
-           start = cur_time;
-           search_years_ahead = Config.time_pattern_search_years_ahead;
-         })
+        let open Daypack_lib.Search_param in
+        Years_ahead_start_unix_second
+          {
+            search_using_tz_offset_s = Some Dynamic_param.current_tz_offset_s;
+            start = cur_time;
+            search_years_ahead = Config.time_pattern_search_years_ahead;
+          }
       in
-        match
-        Daypack_lib.Time_expr.matching_time_slots search_param
-          e
-      with
+      match Daypack_lib.Time_expr.matching_time_slots search_param e with
       | Error msg -> Error msg
       | Ok s -> (
           match List.of_seq s with
@@ -305,8 +296,7 @@ let ask_time_slots ~indent_level ~(prompt : string) : (int64 * int64) list =
   ask ~indent_level
     ~prompt:
       (prompt ^ " (see `daypc grammar --time-slots-expr` for grammar guide)")
-    ~f_until:None
-    process_time_slots_string
+    ~f_until:None process_time_slots_string
 
 let process_task_inst_alloc_req_string (s : string) :
   (Daypack_lib.Task.task_seg_alloc_req, string) result =
