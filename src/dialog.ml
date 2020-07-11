@@ -226,15 +226,13 @@ let ask_duration ~indent_level ~(prompt : string) : int64 =
   ask ~indent_level ~prompt ~f_until:None (fun s ->
       match Daypack_lib.Duration.of_string s with
       | Error s -> Error s
-      | Ok x -> Ok (Daypack_lib.Duration.to_seconds x)
-      )
+      | Ok x -> Ok (Daypack_lib.Duration.to_seconds x))
 
 let ask_duration_multi ~indent_level ~(prompt : string) : int64 list =
   ask_multiple ~indent_level ~prompt (fun s ->
       match Daypack_lib.Duration.of_string s with
       | Error s -> Error s
-      | Ok x -> Ok (Daypack_lib.Duration.to_seconds x)
-    )
+      | Ok x -> Ok (Daypack_lib.Duration.to_seconds x))
 
 let process_time_slot_string (s : string) : (int64 * int64, string) result =
   match Daypack_lib.Time_expr.of_string s with
