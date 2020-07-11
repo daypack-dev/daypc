@@ -222,6 +222,20 @@ let ask_uint64_multi ~indent_level ~(prompt : string) : int64 list =
         if x >= 0L then Ok x else Error "Input is negative"
       with Failure msg -> Error msg)
 
+let ask_duration ~indent_level ~(prompt : string) : int64 =
+  ask ~indent_level ~prompt ~f_until:None (fun s ->
+      match Daypack_lib.Duration.of_string s with
+      | Error s -> Error s
+      | Ok x -> Ok (Daypack_lib.Duration.to_seconds x)
+      )
+
+let ask_duration_multi ~indent_level ~(prompt : string) : int64 list =
+  ask_multiple ~indent_level ~prompt (fun s ->
+      match Daypack_lib.Duration.of_string s with
+      | Error s -> Error s
+      | Ok x -> Ok (Daypack_lib.Duration.to_seconds x)
+    )
+
 let process_time_slot_string (s : string) : (int64 * int64, string) result =
   match Daypack_lib.Time_expr.of_string s with
   | Error msg -> Error msg
@@ -323,7 +337,7 @@ let ask_task_inst_alloc_req ~indent_level ~task_inst_id :
       ~f_until:None process_task_inst_alloc_req_string
   | Some task_inst_id ->
     let task_seg_size =
-      ask_uint64 ~indent_level
+      ask_duration ~indent_level
         ~prompt:"Please enter task seg size to allocate"
     in
     (task_inst_id, task_seg_size)
@@ -338,7 +352,7 @@ let ask_task_inst_alloc_reqs ~indent_level ~task_inst_id :
          task_inst_id,task_seg_size)"
       process_task_inst_alloc_req_string
   | Some task_inst_id ->
-    ask_uint64_multi ~indent_level
+    ask_duration_multi ~indent_level
       ~prompt:"Please enter task seg sizes to allocate"
     |> List.map (fun task_seg_size -> (task_inst_id, task_seg_size))
 
