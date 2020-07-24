@@ -69,6 +69,12 @@ let display_places ?(include_task_seg_place_ending_within_time_slot = false)
   |> Seq.iter (display_place ~cur_time sched)
 
 let display_places_active_or_soon ~show_all ~cur_time sched : unit =
+  let start =
+    Int64.mul
+      (Int64.of_int Config.agenda_search_day_count_backward)
+      Daypack_lib.Time.day_to_second_multiplier
+    |> Int64.sub cur_time
+  in
   let end_exc =
     Int64.mul
       (Int64.of_int Config.agenda_search_minute_count_soon)
@@ -80,7 +86,7 @@ let display_places_active_or_soon ~show_all ~cur_time sched : unit =
       Config.agenda_search_minute_count_soon
   in
   display_places ~include_task_seg_place_ending_within_time_slot:true ~title
-    ~show_all ~cur_time ~start:cur_time ~end_exc
+    ~show_all ~cur_time ~start ~end_exc
     ~max_count:Config.agenda_display_task_seg_place_soon_max_count sched
 
 let display_places_close ~show_all ~cur_time sched : unit =

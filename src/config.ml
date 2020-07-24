@@ -24,6 +24,8 @@ let time_profile_store_dir =
 
 let time_pattern_search_years_ahead = 5
 
+let agenda_search_day_count_backward = 180
+
 let agenda_search_minute_count_soon = 60
 
 let agenda_search_day_count_close = 7
