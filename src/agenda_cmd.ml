@@ -19,8 +19,10 @@ let display_place ~cur_time sched
       place_end_exc
     |> Result.get_ok
   in
+  let time_from_start = Int64.sub place_start cur_time in
   let time_from_start_str =
-    Int64.sub place_start cur_time
+    time_from_start
+    |> Int64.abs
     |> Daypack_lib.Duration.of_seconds
     |> Result.get_ok
     |> Daypack_lib.Duration.To_string.human_readable_string_of_duration
@@ -34,13 +36,17 @@ let display_place ~cur_time sched
   let time_str_space = String.make (String.length time_str) ' ' in
   Printf.printf "%s| %s \n" time_str task.name;
   Printf.printf "%s| ID: %s\n" time_str_space task_seg_id_str;
-  Printf.printf "%s| From now: %s\n" time_str_space time_from_start_str
+  if time_from_start >= 0L then
+    Printf.printf "%s| From now: %s\n" time_str_space time_from_start_str
+  else Printf.printf "%s| Started : %s ago\n" time_str_space time_from_start_str
 
-let display_places ~title ~show_all ~cur_time ~start ~end_exc ~max_count
+let display_places ?(include_task_seg_place_ending_within_time_slot = false)
+    ~title ~show_all ~cur_time ~start ~end_exc ~max_count
     (sched : Daypack_lib.Sched.sched) : unit =
   let places_all =
     Daypack_lib.Sched.Agenda.To_seq.task_seg_place_uncompleted ~start ~end_exc
-      ~include_task_seg_place_starting_within_time_slot:true sched
+      ~include_task_seg_place_starting_within_time_slot:true
+      ~include_task_seg_place_ending_within_time_slot sched
   in
   let total_count = OSeq.length places_all in
   let title =
@@ -73,7 +79,8 @@ let display_places_active_or_soon ~show_all ~cur_time sched : unit =
     Printf.sprintf "Active or starting within next %d minutes"
       Config.agenda_search_minute_count_soon
   in
-  display_places ~title ~show_all ~cur_time ~start:cur_time ~end_exc
+  display_places ~include_task_seg_place_ending_within_time_slot:true ~title
+    ~show_all ~cur_time ~start:cur_time ~end_exc
     ~max_count:Config.agenda_display_task_seg_place_soon_max_count sched
 
 let display_places_close ~show_all ~cur_time sched : unit =
